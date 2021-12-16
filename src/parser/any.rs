@@ -1,4 +1,4 @@
-use super::Parser;
+use super::{Parser, ParserOnce};
 use crate::error::{ParseError, Result};
 use crate::stream::Stream;
 use std::marker::PhantomData;
@@ -13,7 +13,7 @@ impl<I> Parser for Any<I> {
     type Item = I;
     type Output = I;
 
-    fn parse_at<S>(&self, input: &mut Stream<S>) -> Result<Self::Output>
+    fn parse_iter<S>(&self, input: &mut Stream<S>) -> Result<Self::Output>
     where
         S: Iterator<Item = Self::Item>,
     {
@@ -24,5 +24,17 @@ impl<I> Parser for Any<I> {
                 expected: String::from("something"),
             }),
         }
+    }
+}
+
+impl<I> ParserOnce for Any<I> {
+    type Item = I;
+    type Output = I;
+
+    fn parse_iter_once<S>(self, input: &mut Stream<S>) -> Result<Self::Output>
+    where
+        S: Iterator<Item = Self::Item>,
+    {
+        self.parse_iter(input)
     }
 }
