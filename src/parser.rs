@@ -2,14 +2,18 @@ use crate::error::{ParseError, Result};
 use crate::stream::Stream;
 
 mod any;
-mod condition;
 mod position;
 mod value;
 
 pub use any::{any, Any};
-pub use condition::{is, is_not, is_not_once, is_once, Condition, ConditionOnce};
 pub use position::{position, Position};
 pub use value::{value, value_clone, Value, ValueClone};
+
+#[cfg(feature = "std")]
+mod condition;
+
+#[cfg(feature = "std")]
+pub use condition::{is, is_not, is_not_once, is_once, Condition, ConditionOnce};
 
 pub trait Parser {
     type Item;
@@ -34,6 +38,7 @@ pub trait Parser {
         match input.next() {
             Some(_) => Err(ParseError::Expected {
                 position: input.pos(),
+                #[cfg(feature = "std")]
                 expected: String::from("EOF"),
             }),
             None => Ok(output),
@@ -68,6 +73,7 @@ pub trait ParserOnce: Sized {
         match input.next() {
             Some(_) => Err(ParseError::Expected {
                 position: input.pos(),
+                #[cfg(feature = "std")]
                 expected: String::from("EOF"),
             }),
             None => Ok(output),

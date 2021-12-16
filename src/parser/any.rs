@@ -1,6 +1,10 @@
 use super::{Parser, ParserOnce};
 use crate::error::{ParseError, Result};
 use crate::stream::Stream;
+
+#[cfg(not(feature = "std"))]
+use core::marker::PhantomData;
+#[cfg(feature = "std")]
 use std::marker::PhantomData;
 
 pub struct Any<I>(PhantomData<I>);
@@ -21,6 +25,7 @@ impl<I> Parser for Any<I> {
             Some(i) => Ok(i),
             None => Err(ParseError::Expected {
                 position: input.pos(),
+                #[cfg(feature = "std")]
                 expected: String::from("something"),
             }),
         }

@@ -16,4 +16,8 @@ include = [
   "src/**/*.rs"
 ]
 
+[features]
+default = ["std"]
+std = []
+
 [dependencies]
