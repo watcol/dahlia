@@ -2,28 +2,31 @@ use crate::error::{ParseError, Result};
 use crate::stream::Stream;
 
 mod any;
+#[cfg(feature = "std")]
+mod condition;
 mod position;
 mod value;
 
+#[cfg(feature = "std")]
+mod boxed;
+
 pub use any::{any, Any};
+#[cfg(feature = "std")]
+pub use condition::{is, is_not, is_not_once, is_once, Condition, ConditionOnce};
 pub use position::{position, Position};
 pub use value::{value, value_clone, Value, ValueClone};
 
-#[cfg(feature = "std")]
-mod condition;
-
-#[cfg(feature = "std")]
-pub use condition::{is, is_not, is_not_once, is_once, Condition, ConditionOnce};
-
 pub trait Parser: BaseParser {
-    fn boxed(&self) -> RefBoxedParser<'_, Self::Iter, Self::Output>
+    #[cfg(feature = "std")]
+    fn boxed(&self) -> boxed::RefBoxedParser<'_, Self::Iter, Self::Output>
     where
         Self: Sized,
     {
         Box::new(self)
     }
 
-    fn boxed_clone(&self) -> BoxedParser<'_, Self::Iter, Self::Output>
+    #[cfg(feature = "std")]
+    fn boxed_clone(&self) -> boxed::BoxedParser<'_, Self::Iter, Self::Output>
     where
         Self: Clone,
     {
@@ -65,22 +68,6 @@ pub trait BaseParser {
 }
 
 impl<T: BaseParser> Parser for T {}
-
-// TODO: Move into combinator module
-pub type BoxedParser<'a, I, O> = Box<dyn BaseParser<Iter = I, Output = O> + 'a>;
-pub type RefBoxedParser<'a, I, O> = Box<&'a dyn BaseParser<Iter = I, Output = O>>;
-
-impl<'a, I, O> BaseParser for RefBoxedParser<'a, I, O>
-where
-    I: Iterator,
-{
-    type Iter = I;
-    type Output = O;
-
-    fn parse_iter(&self, input: &mut Stream<Self::Iter>) -> Result<Self::Output> {
-        (**self).parse_iter(input)
-    }
-}
 
 pub trait ParserOnce: BaseParserOnce {
     fn parse_once<S, B>(self, input: S) -> Result<(Self::Output, B)>
