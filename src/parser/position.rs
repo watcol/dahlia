@@ -1,4 +1,4 @@
-use super::{Parser, ParserOnce};
+use super::{BaseParser, BaseParserOnce};
 use crate::error::Result;
 use crate::stream::Stream;
 #[cfg(not(feature = "std"))]
@@ -6,32 +6,36 @@ use core::marker::PhantomData;
 #[cfg(feature = "std")]
 use std::marker::PhantomData;
 
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 pub struct Position<I>(PhantomData<I>);
 
-pub fn position<I>() -> Position<I> {
+pub fn position<I>() -> Position<I>
+where
+    I: Iterator,
+{
     Position(PhantomData)
 }
 
-impl<I> Parser for Position<I> {
-    type Item = I;
+impl<I> BaseParser for Position<I>
+where
+    I: Iterator,
+{
+    type Iter = I;
     type Output = usize;
 
-    fn parse_iter<S>(&self, input: &mut Stream<S>) -> Result<Self::Output>
-    where
-        S: Iterator<Item = Self::Item>,
-    {
+    fn parse_iter(&self, input: &mut Stream<Self::Iter>) -> Result<Self::Output> {
         Ok(input.pos())
     }
 }
 
-impl<I> ParserOnce for Position<I> {
-    type Item = I;
+impl<I> BaseParserOnce for Position<I>
+where
+    I: Iterator,
+{
+    type Iter = I;
     type Output = usize;
 
-    fn parse_iter_once<S>(self, input: &mut Stream<S>) -> Result<Self::Output>
-    where
-        S: Iterator<Item = Self::Item>,
-    {
+    fn parse_iter_once(self, input: &mut Stream<Self::Iter>) -> Result<Self::Output> {
         self.parse_iter(input)
     }
 }

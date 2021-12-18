@@ -15,23 +15,34 @@ mod condition;
 #[cfg(feature = "std")]
 pub use condition::{is, is_not, is_not_once, is_once, Condition, ConditionOnce};
 
-pub trait Parser {
-    type Item;
-    type Output;
-
-    fn parse<S, B>(&self, input: S) -> Result<(Self::Output, B)>
+pub trait Parser: BaseParser {
+    fn boxed(&self) -> RefBoxedParser<'_, Self::Iter, Self::Output>
     where
-        S: IntoIterator<Item = Self::Item>,
-        B: FromIterator<Self::Item>,
+        Self: Sized,
+    {
+        Box::new(self)
+    }
+
+    fn boxed_clone(&self) -> BoxedParser<'_, Self::Iter, Self::Output>
+    where
+        Self: Clone,
+    {
+        Box::new(self.clone())
+    }
+
+    fn parse<I, B>(&self, input: I) -> Result<(Self::Output, B)>
+    where
+        I: IntoIterator<IntoIter = Self::Iter>,
+        B: FromIterator<<Self::Iter as Iterator>::Item>,
     {
         let mut input = Stream::from(input);
         let output = self.parse_iter(&mut input)?;
         Ok((output, input.collect()))
     }
 
-    fn parse_complete<S>(&self, input: S) -> Result<Self::Output>
+    fn parse_complete<I>(&self, input: I) -> Result<Self::Output>
     where
-        S: IntoIterator<Item = Self::Item>,
+        I: IntoIterator<IntoIter = Self::Iter>,
     {
         let mut input = Stream::from(input);
         let output = self.parse_iter(&mut input)?;
@@ -44,20 +55,39 @@ pub trait Parser {
             None => Ok(output),
         }
     }
-
-    fn parse_iter<S>(&self, input: &mut Stream<S>) -> Result<Self::Output>
-    where
-        S: Iterator<Item = Self::Item>;
 }
 
-pub trait ParserOnce: Sized {
-    type Item;
+pub trait BaseParser {
+    type Iter: Iterator;
     type Output;
 
+    fn parse_iter(&self, input: &mut Stream<Self::Iter>) -> Result<Self::Output>;
+}
+
+impl<T: BaseParser> Parser for T {}
+
+// TODO: Move into combinator module
+pub type BoxedParser<'a, I, O> = Box<dyn BaseParser<Iter = I, Output = O> + 'a>;
+pub type RefBoxedParser<'a, I, O> = Box<&'a dyn BaseParser<Iter = I, Output = O>>;
+
+impl<'a, I, O> BaseParser for RefBoxedParser<'a, I, O>
+where
+    I: Iterator,
+{
+    type Iter = I;
+    type Output = O;
+
+    fn parse_iter(&self, input: &mut Stream<Self::Iter>) -> Result<Self::Output> {
+        (**self).parse_iter(input)
+    }
+}
+
+pub trait ParserOnce: BaseParserOnce {
     fn parse_once<S, B>(self, input: S) -> Result<(Self::Output, B)>
     where
-        S: IntoIterator<Item = Self::Item>,
-        B: FromIterator<Self::Item>,
+        Self: Sized,
+        S: IntoIterator<IntoIter = Self::Iter>,
+        B: FromIterator<<Self::Iter as Iterator>::Item>,
     {
         let mut input = Stream::from(input);
         let output = self.parse_iter_once(&mut input)?;
@@ -66,7 +96,8 @@ pub trait ParserOnce: Sized {
 
     fn parse_complete_once<S>(self, input: S) -> Result<Self::Output>
     where
-        S: IntoIterator<Item = Self::Item>,
+        Self: Sized,
+        S: IntoIterator<IntoIter = Self::Iter>,
     {
         let mut input = Stream::from(input);
         let output = self.parse_iter_once(&mut input)?;
@@ -79,8 +110,11 @@ pub trait ParserOnce: Sized {
             None => Ok(output),
         }
     }
+}
 
-    fn parse_iter_once<S>(self, input: &mut Stream<S>) -> Result<Self::Output>
-    where
-        S: Iterator<Item = Self::Item>;
+pub trait BaseParserOnce {
+    type Iter: Iterator;
+    type Output;
+
+    fn parse_iter_once(self, input: &mut Stream<Self::Iter>) -> Result<Self::Output>;
 }

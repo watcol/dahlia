@@ -1,4 +1,4 @@
-use super::{Parser, ParserOnce};
+use super::{BaseParser, BaseParserOnce};
 use crate::error::{ParseError, Result};
 use crate::stream::Stream;
 
@@ -7,20 +7,24 @@ use core::marker::PhantomData;
 #[cfg(feature = "std")]
 use std::marker::PhantomData;
 
-pub struct Any<I>(PhantomData<I>);
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
+pub struct Any<I: Iterator>(PhantomData<I>);
 
-pub fn any<I>() -> Any<I> {
+pub fn any<I>() -> Any<I>
+where
+    I: Iterator,
+{
     Any(PhantomData)
 }
 
-impl<I> Parser for Any<I> {
-    type Item = I;
-    type Output = I;
+impl<I> BaseParser for Any<I>
+where
+    I: Iterator,
+{
+    type Iter = I;
+    type Output = I::Item;
 
-    fn parse_iter<S>(&self, input: &mut Stream<S>) -> Result<Self::Output>
-    where
-        S: Iterator<Item = Self::Item>,
-    {
+    fn parse_iter(&self, input: &mut Stream<Self::Iter>) -> Result<Self::Output> {
         match input.next() {
             Some(i) => Ok(i),
             None => Err(ParseError::Expected {
@@ -32,14 +36,14 @@ impl<I> Parser for Any<I> {
     }
 }
 
-impl<I> ParserOnce for Any<I> {
-    type Item = I;
-    type Output = I;
+impl<I> BaseParserOnce for Any<I>
+where
+    I: Iterator,
+{
+    type Iter = I;
+    type Output = I::Item;
 
-    fn parse_iter_once<S>(self, input: &mut Stream<S>) -> Result<Self::Output>
-    where
-        S: Iterator<Item = Self::Item>,
-    {
+    fn parse_iter_once(self, input: &mut Stream<Self::Iter>) -> Result<Self::Output> {
         self.parse_iter(input)
     }
 }
