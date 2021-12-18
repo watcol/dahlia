@@ -2,6 +2,11 @@ use super::{BaseParser, BaseParserOnce};
 use crate::error::{ParseError, Result};
 use crate::stream::Stream;
 
+#[cfg(not(feature = "std"))]
+use alloc::boxed::Box;
+#[cfg(not(feature = "std"))]
+use alloc::string::String;
+
 type Func<'a, I> = dyn for<'b> Fn(&'b I) -> bool + 'a;
 pub struct Condition<'a, I: Iterator>(Box<Func<'a, I::Item>>);
 

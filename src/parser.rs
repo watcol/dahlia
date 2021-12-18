@@ -2,22 +2,27 @@ use crate::error::{ParseError, Result};
 use crate::stream::Stream;
 
 mod any;
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
 mod condition;
 mod position;
 mod value;
 
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
 mod boxed;
 
 pub use any::{any, Any};
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
 pub use condition::{is, is_not, is_not_once, is_once, Condition, ConditionOnce};
 pub use position::{position, Position};
 pub use value::{value, value_clone, Value, ValueClone};
 
+#[cfg(all(not(feature = "std"), feature = "alloc"))]
+use alloc::boxed::Box;
+#[cfg(all(not(feature = "std"), feature = "alloc"))]
+use alloc::string::String;
+
 pub trait Parser: BaseParser {
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     fn boxed(&self) -> boxed::RefBoxedParser<'_, Self::Iter, Self::Output>
     where
         Self: Sized,
@@ -25,7 +30,7 @@ pub trait Parser: BaseParser {
         Box::new(self)
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     fn boxed_clone(&self) -> boxed::BoxedParser<'_, Self::Iter, Self::Output>
     where
         Self: Clone,
@@ -52,7 +57,7 @@ pub trait Parser: BaseParser {
         match input.next() {
             Some(_) => Err(ParseError::Expected {
                 position: input.pos(),
-                #[cfg(feature = "std")]
+                #[cfg(feature = "alloc")]
                 expected: String::from("EOF"),
             }),
             None => Ok(output),
@@ -91,7 +96,7 @@ pub trait ParserOnce: BaseParserOnce {
         match input.next() {
             Some(_) => Err(ParseError::Expected {
                 position: input.pos(),
-                #[cfg(feature = "std")]
+                #[cfg(feature = "alloc")]
                 expected: String::from("EOF"),
             }),
             None => Ok(output),

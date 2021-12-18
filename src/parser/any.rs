@@ -7,6 +7,9 @@ use core::marker::PhantomData;
 #[cfg(feature = "std")]
 use std::marker::PhantomData;
 
+#[cfg(all(not(feature = "std"), feature = "alloc"))]
+use alloc::string::String;
+
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 pub struct Any<I: Iterator>(PhantomData<I>);
 
@@ -29,7 +32,7 @@ where
             Some(i) => Ok(i),
             None => Err(ParseError::Expected {
                 position: input.pos(),
-                #[cfg(feature = "std")]
+                #[cfg(feature = "alloc")]
                 expected: String::from("something"),
             }),
         }

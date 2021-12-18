@@ -1,3 +1,5 @@
+#[cfg(all(not(feature = "std"), feature = "alloc"))]
+use alloc::string::String;
 #[cfg(not(feature = "std"))]
 use core::fmt;
 #[cfg(feature = "std")]
@@ -9,7 +11,7 @@ pub type Result<T> = core::result::Result<T, ParseError>;
 pub enum ParseError {
     Expected {
         position: usize,
-        #[cfg(feature = "std")]
+        #[cfg(feature = "alloc")]
         expected: String,
     },
 }
@@ -17,11 +19,11 @@ pub enum ParseError {
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            #[cfg(feature = "std")]
+            #[cfg(feature = "alloc")]
             Self::Expected { expected, .. } => {
                 write!(f, "expected {}", expected)
             }
-            #[cfg(not(feature = "std"))]
+            #[cfg(not(feature = "alloc"))]
             Self::Expected { .. } => {
                 write!(f, "Input Mismatched")
             }
