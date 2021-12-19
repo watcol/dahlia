@@ -9,17 +9,11 @@ use std::marker::PhantomData;
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 pub struct Position<I: Clone>(PhantomData<I>);
 
-pub fn position<I>() -> Position<I>
-where
-    I: Clone,
-{
+pub fn position<I: Clone>() -> Position<I> {
     Position(PhantomData)
 }
 
-impl<I> BaseParser for Position<I>
-where
-    I: Clone,
-{
+impl<I: Clone> BaseParser for Position<I> {
     type Item = I;
     type Output = usize;
 
@@ -28,10 +22,7 @@ where
     }
 }
 
-impl<I> BaseParserOnce for Position<I>
-where
-    I: Clone,
-{
+impl<I: Clone> BaseParserOnce for Position<I> {
     type Item = I;
     type Output = usize;
 

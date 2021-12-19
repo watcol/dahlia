@@ -8,17 +8,11 @@ use std::marker::PhantomData;
 
 pub struct Value<T, I: Clone>(T, PhantomData<I>);
 
-pub fn value<T, I>(value: T) -> Value<T, I>
-where
-    I: Clone,
-{
+pub fn value<T, I: Clone>(value: T) -> Value<T, I> {
     Value(value, PhantomData)
 }
 
-impl<T: Copy, I> BaseParser for Value<T, I>
-where
-    I: Clone,
-{
+impl<T: Copy, I: Clone> BaseParser for Value<T, I> {
     type Item = I;
     type Output = T;
 
@@ -27,10 +21,7 @@ where
     }
 }
 
-impl<T, I> BaseParserOnce for Value<T, I>
-where
-    I: Clone,
-{
+impl<T, I: Clone> BaseParserOnce for Value<T, I> {
     type Item = I;
     type Output = T;
 
@@ -41,17 +32,11 @@ where
 
 pub struct ValueClone<T, I: Clone>(T, PhantomData<I>);
 
-pub fn value_clone<T, I>(value: T) -> ValueClone<T, I>
-where
-    I: Clone,
-{
+pub fn value_clone<T, I: Clone>(value: T) -> ValueClone<T, I> {
     ValueClone(value, PhantomData)
 }
 
-impl<T: Clone, I> BaseParser for ValueClone<T, I>
-where
-    I: Clone,
-{
+impl<T: Clone, I: Clone> BaseParser for ValueClone<T, I> {
     type Item = I;
     type Output = T;
 
@@ -60,10 +45,7 @@ where
     }
 }
 
-impl<T, I> BaseParserOnce for ValueClone<T, I>
-where
-    I: Clone,
-{
+impl<T, I: Clone> BaseParserOnce for ValueClone<T, I> {
     type Item = I;
     type Output = T;
 

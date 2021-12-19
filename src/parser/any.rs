@@ -13,17 +13,11 @@ use alloc::string::String;
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 pub struct Any<I: Clone>(PhantomData<I>);
 
-pub fn any<I>() -> Any<I>
-where
-    I: Clone,
-{
+pub fn any<I: Clone>() -> Any<I> {
     Any(PhantomData)
 }
 
-impl<I> BaseParser for Any<I>
-where
-    I: Clone,
-{
+impl<I: Clone> BaseParser for Any<I> {
     type Item = I;
     type Output = I;
 
@@ -39,10 +33,7 @@ where
     }
 }
 
-impl<I> BaseParserOnce for Any<I>
-where
-    I: Clone,
-{
+impl<I: Clone> BaseParserOnce for Any<I> {
     type Item = I;
     type Output = I;
 
