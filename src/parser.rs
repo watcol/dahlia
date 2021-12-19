@@ -23,7 +23,7 @@ use alloc::string::String;
 
 pub trait Parser: BaseParser {
     #[cfg(feature = "alloc")]
-    fn boxed(&self) -> boxed::RefBoxedParser<'_, Self::Iter, Self::Output>
+    fn boxed(&self) -> boxed::RefBoxedParser<'_, Self::Item, Self::Output>
     where
         Self: Sized,
     {
@@ -31,7 +31,7 @@ pub trait Parser: BaseParser {
     }
 
     #[cfg(feature = "alloc")]
-    fn boxed_clone(&self) -> boxed::BoxedParser<'_, Self::Iter, Self::Output>
+    fn boxed_clone(&self) -> boxed::BoxedParser<'_, Self::Item, Self::Output>
     where
         Self: Clone,
     {
@@ -40,19 +40,19 @@ pub trait Parser: BaseParser {
 
     fn parse<I, B>(&self, input: I) -> Result<(Self::Output, B)>
     where
-        I: IntoIterator<IntoIter = Self::Iter>,
-        B: FromIterator<<Self::Iter as Iterator>::Item>,
+        I: Into<Stream<Self::Item>>,
+        B: FromIterator<Self::Item>,
     {
-        let mut input = Stream::from(input);
+        let mut input = input.into();
         let output = self.parse_iter(&mut input)?;
         Ok((output, input.collect()))
     }
 
     fn parse_complete<I>(&self, input: I) -> Result<Self::Output>
     where
-        I: IntoIterator<IntoIter = Self::Iter>,
+        I: Into<Stream<Self::Item>>,
     {
-        let mut input = Stream::from(input);
+        let mut input = input.into();
         let output = self.parse_iter(&mut input)?;
         match input.next() {
             Some(_) => Err(ParseError::Expected {
@@ -66,10 +66,10 @@ pub trait Parser: BaseParser {
 }
 
 pub trait BaseParser {
-    type Iter: Iterator;
+    type Item: Clone;
     type Output;
 
-    fn parse_iter(&self, input: &mut Stream<Self::Iter>) -> Result<Self::Output>;
+    fn parse_iter(&self, input: &mut Stream<Self::Item>) -> Result<Self::Output>;
 }
 
 impl<T: BaseParser> Parser for T {}
@@ -78,10 +78,10 @@ pub trait ParserOnce: BaseParserOnce {
     fn parse_once<S, B>(self, input: S) -> Result<(Self::Output, B)>
     where
         Self: Sized,
-        S: IntoIterator<IntoIter = Self::Iter>,
-        B: FromIterator<<Self::Iter as Iterator>::Item>,
+        S: Into<Stream<Self::Item>>,
+        B: FromIterator<Self::Item>,
     {
-        let mut input = Stream::from(input);
+        let mut input = input.into();
         let output = self.parse_iter_once(&mut input)?;
         Ok((output, input.collect()))
     }
@@ -89,9 +89,9 @@ pub trait ParserOnce: BaseParserOnce {
     fn parse_complete_once<S>(self, input: S) -> Result<Self::Output>
     where
         Self: Sized,
-        S: IntoIterator<IntoIter = Self::Iter>,
+        S: Into<Stream<Self::Item>>,
     {
-        let mut input = Stream::from(input);
+        let mut input = input.into();
         let output = self.parse_iter_once(&mut input)?;
         match input.next() {
             Some(_) => Err(ParseError::Expected {
@@ -105,8 +105,8 @@ pub trait ParserOnce: BaseParserOnce {
 }
 
 pub trait BaseParserOnce {
-    type Iter: Iterator;
+    type Item: Clone;
     type Output;
 
-    fn parse_iter_once(self, input: &mut Stream<Self::Iter>) -> Result<Self::Output>;
+    fn parse_iter_once(self, input: &mut Stream<Self::Item>) -> Result<Self::Output>;
 }

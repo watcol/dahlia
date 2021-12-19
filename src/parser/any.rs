@@ -11,23 +11,23 @@ use std::marker::PhantomData;
 use alloc::string::String;
 
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
-pub struct Any<I: Iterator>(PhantomData<I>);
+pub struct Any<I: Clone>(PhantomData<I>);
 
 pub fn any<I>() -> Any<I>
 where
-    I: Iterator,
+    I: Clone,
 {
     Any(PhantomData)
 }
 
 impl<I> BaseParser for Any<I>
 where
-    I: Iterator,
+    I: Clone,
 {
-    type Iter = I;
-    type Output = I::Item;
+    type Item = I;
+    type Output = I;
 
-    fn parse_iter(&self, input: &mut Stream<Self::Iter>) -> Result<Self::Output> {
+    fn parse_iter(&self, input: &mut Stream<Self::Item>) -> Result<Self::Output> {
         match input.next() {
             Some(i) => Ok(i),
             None => Err(ParseError::Expected {
@@ -41,12 +41,12 @@ where
 
 impl<I> BaseParserOnce for Any<I>
 where
-    I: Iterator,
+    I: Clone,
 {
-    type Iter = I;
-    type Output = I::Item;
+    type Item = I;
+    type Output = I;
 
-    fn parse_iter_once(self, input: &mut Stream<Self::Iter>) -> Result<Self::Output> {
+    fn parse_iter_once(self, input: &mut Stream<Self::Item>) -> Result<Self::Output> {
         self.parse_iter(input)
     }
 }
