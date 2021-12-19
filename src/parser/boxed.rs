@@ -2,7 +2,7 @@ use crate::error::Result;
 use crate::parser::BaseParser;
 use crate::stream::Stream;
 
-#[cfg(all(not(feature = "std"), feature = "alloc"))]
+#[cfg(not(feature = "std"))]
 use alloc::boxed::Box;
 
 pub type BoxedParser<'a, I, O> = Box<dyn BaseParser<Item = I, Output = O> + 'a>;

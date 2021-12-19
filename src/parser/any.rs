@@ -7,7 +7,7 @@ use core::marker::PhantomData;
 #[cfg(feature = "std")]
 use std::marker::PhantomData;
 
-#[cfg(all(not(feature = "std"), feature = "alloc"))]
+#[cfg(not(feature = "std"))]
 use alloc::string::String;
 
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
@@ -26,7 +26,6 @@ impl<I: Clone> BaseParser for Any<I> {
             Some(i) => Ok(i),
             None => Err(ParseError::Expected {
                 position: input.pos(),
-                #[cfg(feature = "alloc")]
                 expected: String::from("something"),
             }),
         }

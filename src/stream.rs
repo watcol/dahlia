@@ -1,3 +1,8 @@
+#[cfg(not(feature = "std"))]
+use alloc::string::String;
+#[cfg(not(feature = "std"))]
+use alloc::vec::Vec;
+
 pub struct Stream<T: Clone> {
     position: usize,
     inner: Vec<T>,

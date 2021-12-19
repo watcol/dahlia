@@ -17,8 +17,7 @@ include = [
 ]
 
 [features]
-default = ["std"]
-alloc = []
-std = ["alloc"]
+default = []
+std = []
 
 [dependencies]
