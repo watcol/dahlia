@@ -36,19 +36,11 @@ pub trait Parser: BaseParser {
     /// This function converts myself to `Box<dyn BaseParser>`, so it's useful when type
     /// matching or describing the type of `once_cell` constant.
     #[cfg(feature = "std")]
-    fn boxed(&self) -> boxed::RefBoxedParser<'_, Self::Item, Self::Output>
+    fn boxed(&self) -> boxed::BoxedParser<'_, Self::Item, Self::Output>
     where
         Self: Sized,
     {
         Box::new(self)
-    }
-
-    #[cfg(feature = "std")]
-    fn boxed_clone(&self) -> boxed::BoxedParser<'_, Self::Item, Self::Output>
-    where
-        Self: Clone,
-    {
-        Box::new(self.clone())
     }
 
     /// Parse the input.
