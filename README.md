@@ -1,8 +1,8 @@
-# Dhalia
+# Dahlia
 
-Dhalia is a parser combinator as a trait.
+Dahlia is a parser combinator as a trait.
 
 ## License
 This program is licensed under the MIT license.
 
-See [LICENSE](https://github.com/watcol/dhalia/blob/main/LICENSE) for details.
+See [LICENSE](https://github.com/watcol/dahlia/blob/main/LICENSE) for details.

@@ -1,6 +1,6 @@
-//! Dhalia, a reusable parser combinator.
+//! Dahlia, a reusable parser combinator.
 //!
-//! Dhalia is a parser combinator implemented as a trait. Parsers implements `Parser`
+//! Dahlia is a parser combinator implemented as a trait. Parsers implements `Parser`
 //! is not consumed when parsing an input. (So parsers can be defined as an `once_cell`
 //! constant.)
 
