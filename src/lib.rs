@@ -17,7 +17,6 @@ pub use stream::Stream;
 
 pub mod parser;
 
-pub use parser::{any, position, value, value_clone, Parser, ParserOnce};
-
-#[cfg(feature = "std")]
-pub use parser::{is, is_not, is_not_once, is_once};
+pub use parser::{
+    any, is, is_not, is_not_once, is_once, position, value, value_clone, Parser, ParserOnce,
+};

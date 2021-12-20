@@ -1,4 +1,3 @@
-use super::boxed;
 use crate::error::{ParseError, Result};
 use crate::stream::Stream;
 
@@ -11,18 +10,6 @@ use alloc::string::String;
 /// `BaseParserOnce` to extend functions. They are separated to implement [object
 /// safety](https://rust-lang.github.io/rfcs/0255-object-safety.html).
 pub trait ParserOnce: BaseParserOnce {
-    /// Puts the reference of myself into the `Box`.
-    ///
-    /// This function converts myself to `Box<dyn BaseParser>`, so it's useful when type
-    /// matching or describing the type of `once_cell` constant.
-    #[cfg(feature = "std")]
-    fn boxed<'a>(self) -> boxed::BoxedParserOnce<'a, Self::Item, Self::Output>
-    where
-        Self: Sized + 'a,
-    {
-        Box::new(self)
-    }
-
     /// Parse the input.
     ///
     /// This function will parse an input (`Vec<Item>`, `&[Item]`, `String` or `&str`
