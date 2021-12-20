@@ -5,6 +5,7 @@ use crate::stream::Stream;
 #[cfg(not(feature = "std"))]
 use alloc::boxed::Box;
 
+/// Dynamically dispatched type which implements `BaseParser`.
 pub type BoxedParser<'a, I, O> = Box<dyn BaseParser<Item = I, Output = O> + 'a>;
 
 impl<'a, I: Clone, O> BaseParser for BoxedParser<'a, I, O> {
@@ -16,6 +17,7 @@ impl<'a, I: Clone, O> BaseParser for BoxedParser<'a, I, O> {
     }
 }
 
+/// Dynamically dispatched reference type which implements `BaseParser`.
 pub type RefBoxedParser<'a, I, O> = Box<&'a dyn BaseParser<Item = I, Output = O>>;
 
 impl<'a, I: Clone, O> BaseParser for RefBoxedParser<'a, I, O> {

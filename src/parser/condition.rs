@@ -7,9 +7,15 @@ use alloc::boxed::Box;
 #[cfg(not(feature = "std"))]
 use alloc::string::String;
 
-type Func<'a, I> = dyn for<'b> Fn(&'b I) -> bool + 'a;
+/// A parser which consumes an item if condition is matched.
+///
+/// See `is()` and `is_not()`.
 pub struct Condition<'a, I: Clone>(Box<Func<'a, I>>);
+type Func<'a, I> = dyn for<'b> Fn(&'b I) -> bool + 'a;
 
+/// A parser which consumes an item if condition is matched.
+///
+/// If condition is not matched or reached `EOF` it fails.
 pub fn is<'a, I: Clone, F>(cond: F) -> Condition<'a, I>
 where
     F: for<'b> Fn(&'b I) -> bool + 'a,
@@ -17,6 +23,9 @@ where
     Condition(Box::new(cond))
 }
 
+/// A parser which consumes an item if condition is not matched.
+///
+/// If condition is matched or reached `EOF` it fails.
 pub fn is_not<'a, I: Clone, F>(cond: F) -> Condition<'a, I>
 where
     F: for<'b> Fn(&'b I) -> bool + 'a,
@@ -39,9 +48,15 @@ impl<'a, I: Clone> BaseParser for Condition<'a, I> {
     }
 }
 
-type FuncOnce<'a, I> = dyn for<'b> FnOnce(&'b I) -> bool + 'a;
+/// A parser(`ParserOnce`) which consumes an item if condition is matched.
+///
+/// See `is_once()` and `is_not_once()`.
 pub struct ConditionOnce<'a, I: Clone>(Box<FuncOnce<'a, I>>);
+type FuncOnce<'a, I> = dyn for<'b> FnOnce(&'b I) -> bool + 'a;
 
+/// A parser(`ParserOnce`) which consumes an item if condition is matched.
+///
+/// If condition is not matched or reached `EOF` it fails.
 pub fn is_once<'a, I: Clone, F>(cond: F) -> ConditionOnce<'a, I>
 where
     F: for<'b> FnOnce(&'b I) -> bool + 'a,
@@ -49,6 +64,9 @@ where
     ConditionOnce(Box::new(cond))
 }
 
+/// A parser(`ParserOnce`) which consumes an item if condition is not matched.
+///
+/// If condition is matched or reached `EOF` it fails.
 pub fn is_not_once<'a, I: Clone, F>(cond: F) -> ConditionOnce<'a, I>
 where
     F: for<'b> FnOnce(&'b I) -> bool + 'a,

@@ -10,9 +10,15 @@ use std::marker::PhantomData;
 #[cfg(not(feature = "std"))]
 use alloc::string::String;
 
+/// A parser consumes one item.
+///
+/// See `any()`.
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 pub struct Any<I: Clone>(PhantomData<I>);
 
+/// A parser consumes one item.
+///
+/// This parser consume one item unless it reaches EOF.
 pub fn any<I: Clone>() -> Any<I> {
     Any(PhantomData)
 }

@@ -3,6 +3,11 @@ use alloc::string::String;
 #[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
 
+/// A vector which records current position.
+///
+/// This type is a wrapper of `Vec<T>`, holds its position for parsing.
+///
+/// > Note that the position is a point that parser should read **next** time.
 pub struct Stream<T: Clone> {
     position: usize,
     inner: Vec<T>,

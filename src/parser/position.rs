@@ -6,9 +6,13 @@ use core::marker::PhantomData;
 #[cfg(feature = "std")]
 use std::marker::PhantomData;
 
+/// A parser consumes no input, returns current position.
+///
+/// See `position()`.
 #[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 pub struct Position<I: Clone>(PhantomData<I>);
 
+/// A parser consumes no input, returns current position.
 pub fn position<I: Clone>() -> Position<I> {
     Position(PhantomData)
 }
