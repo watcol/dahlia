@@ -17,7 +17,7 @@ include = [
 ]
 
 [features]
-default = []
+default = ["std"]
 std = []
 
 [dependencies]
