@@ -8,11 +8,13 @@ pub use boxed::BoxedParser;
 // parsers
 mod any;
 mod condition;
+mod function;
 mod position;
 mod value;
 
 pub use any::{any, Any};
 pub use condition::{is, is_not, Condition};
+pub use function::{function, Function};
 pub use position::{position, Position};
 pub use value::{value, Value};
 

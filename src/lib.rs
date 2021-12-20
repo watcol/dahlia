@@ -17,4 +17,4 @@ pub use stream::Stream;
 
 pub mod parser;
 
-pub use parser::{any, is, is_not, position, value, BoxedParser, Parser};
+pub use parser::{any, function, is, is_not, position, value, BoxedParser, Parser};
