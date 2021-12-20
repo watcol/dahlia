@@ -8,7 +8,7 @@ use alloc::boxed::Box;
 /// Dynamically dispatched type which implements `BaseParser`.
 pub type BoxedParser<'a, I, O> = Box<&'a dyn BaseParser<Item = I, Output = O>>;
 
-impl<P: BaseParser> BaseParser for Box<P> {
+impl<P: ?Sized + BaseParser> BaseParser for Box<P> {
     type Item = P::Item;
     type Output = P::Output;
 
