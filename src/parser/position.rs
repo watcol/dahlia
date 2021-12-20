@@ -1,4 +1,4 @@
-use super::{BaseParser, BaseParserOnce};
+use super::BaseParser;
 use crate::error::Result;
 use crate::stream::Stream;
 #[cfg(not(feature = "std"))]
@@ -23,14 +23,5 @@ impl<I: Clone> BaseParser for Position<I> {
 
     fn parse_iter(&self, input: &mut Stream<Self::Item>) -> Result<Self::Output> {
         Ok(input.pos())
-    }
-}
-
-impl<I: Clone> BaseParserOnce for Position<I> {
-    type Item = I;
-    type Output = usize;
-
-    fn parse_iter_once(self, input: &mut Stream<Self::Item>) -> Result<Self::Output> {
-        self.parse_iter(input)
     }
 }

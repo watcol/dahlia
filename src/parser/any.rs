@@ -1,4 +1,4 @@
-use super::{BaseParser, BaseParserOnce};
+use super::BaseParser;
 use crate::error::{ParseError, Result};
 use crate::stream::Stream;
 
@@ -35,14 +35,5 @@ impl<I: Clone> BaseParser for Any<I> {
                 expected: String::from("something"),
             }),
         }
-    }
-}
-
-impl<I: Clone> BaseParserOnce for Any<I> {
-    type Item = I;
-    type Output = I;
-
-    fn parse_iter_once(self, input: &mut Stream<Self::Item>) -> Result<Self::Output> {
-        self.parse_iter(input)
     }
 }
